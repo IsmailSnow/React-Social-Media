@@ -148,9 +148,6 @@ app.post('/login',(request,response)=>{
           })
           .catch(error=>{
             console.error(error);
-            if(error.code === 'auth/wrong-password'){
-              return response.status(400).json({message : 'wrong password , please try again '})
-            }
             return response.status(500).json({error : error.code});
           });
 

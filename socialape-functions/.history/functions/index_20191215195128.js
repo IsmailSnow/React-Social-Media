@@ -139,18 +139,15 @@ app.post('/login',(request,response)=>{
   if(Object.keys(errors).length > 0) return response.status(400).json(errors);
 
   firebase.auth()
-          .signInWithEmailAndPassword(user.email,user.password)
+          .createUserWithEmailAndPassword(user.email,email.password)
           .then(data =>{
-            return data.user.getIdToken();
+            return data.getIdToken();
           })
           .then(token=> {
             return response.json({token})
           })
           .catch(error=>{
             console.error(error);
-            if(error.code === 'auth/wrong-password'){
-              return response.status(400).json({message : 'wrong password , please try again '})
-            }
             return response.status(500).json({error : error.code});
           });
 

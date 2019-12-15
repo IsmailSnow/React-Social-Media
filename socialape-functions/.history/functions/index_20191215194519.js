@@ -124,36 +124,6 @@ app.post('/signup',(request,response)=>{
 
 
                
-});
-
-app.post('/login',(request,response)=>{
-  const user = {
-    email : request.body.email,
-    password : request.body.password
-  };
-
-  let errors = {};
-  if(isEmpty(user.email)) errors.email = "Email must not be empty";
-  if(isEmpty(user.password)) errors.password = "Email must not be empty";
-
-  if(Object.keys(errors).length > 0) return response.status(400).json(errors);
-
-  firebase.auth()
-          .signInWithEmailAndPassword(user.email,user.password)
-          .then(data =>{
-            return data.user.getIdToken();
-          })
-          .then(token=> {
-            return response.json({token})
-          })
-          .catch(error=>{
-            console.error(error);
-            if(error.code === 'auth/wrong-password'){
-              return response.status(400).json({message : 'wrong password , please try again '})
-            }
-            return response.status(500).json({error : error.code});
-          });
-
 })
 
 

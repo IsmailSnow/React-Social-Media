@@ -81,10 +81,10 @@ app.post('/signup',(request,response)=>{
     if(isEmpty(newUser.email)) {
       errors.email = "Email must not be empty";
     } else if(!isEmail(newUser.email)) errors.email = "Email must be valid";
+
     if(isEmpty(newUser.password)) errors.password = "Email must not be empty";
-    if(newUser.password !== newUser.confirmPassword) errors.confirmPassword = "Password must matchs"
-    if(isEmpty(newUser.handle)) errors.handle = "User must not be empty";;
-    if(Object.keys(errors).length > 0) return response.status(400).json(errors);
+    if(newUser.password !== newUser.confirmPassword) errors.confirmPassword = "Password must matchs";
+
        //TODO validate data
     let token,userId;
     db.doc(`/users/${newUser.handle}`)
@@ -124,36 +124,6 @@ app.post('/signup',(request,response)=>{
 
 
                
-});
-
-app.post('/login',(request,response)=>{
-  const user = {
-    email : request.body.email,
-    password : request.body.password
-  };
-
-  let errors = {};
-  if(isEmpty(user.email)) errors.email = "Email must not be empty";
-  if(isEmpty(user.password)) errors.password = "Email must not be empty";
-
-  if(Object.keys(errors).length > 0) return response.status(400).json(errors);
-
-  firebase.auth()
-          .signInWithEmailAndPassword(user.email,user.password)
-          .then(data =>{
-            return data.user.getIdToken();
-          })
-          .then(token=> {
-            return response.json({token})
-          })
-          .catch(error=>{
-            console.error(error);
-            if(error.code === 'auth/wrong-password'){
-              return response.status(400).json({message : 'wrong password , please try again '})
-            }
-            return response.status(500).json({error : error.code});
-          });
-
 })
 
 
