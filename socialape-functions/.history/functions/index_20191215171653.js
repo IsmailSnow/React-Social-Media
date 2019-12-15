@@ -70,25 +70,22 @@ app.post('/signup',(request,response)=>{
        }
 
        //TODO validate data
-    let tokenValue,userId;
+    let token,userId;
     db.doc(`/users/${newUser.handle}`)
       .get()
       .then(doc => {
-                    if(doc.exists)
-                    {
-                        return response.status(400).json({message: 'this handle is already taken'});
-                    }else
-                    {
+                    if(doc.exists){
+                        return response.status(400).json({message: 'this handle is already taken'})
+                    }else{
                     return firebase.auth()
-                                   .createUserWithEmailAndPassword(newUser.email,newUser.password);
-                    }
-                    })
+                                   .createUserWithEmailAndPassword(newUser.email,newUser.password)
+    }})
       .then(data => {
                     userId = data.user.uid;
                     return data.user.getIdToken();
       })
       .then(token => {
-        tokenValue = token;
+          token = token;
           const userCrendetials = {
             handle: newUser.handle,
             email: newUser.email,
@@ -97,7 +94,7 @@ app.post('/signup',(request,response)=>{
           };
           return  db.doc(`/users/${newUser.handle}`).set(userCrendetials);
                      })
-      .then(()=> response.status(201).json({tokenValue}))
+      .then(()=> response.status(201).json({token}))
       .catch(error=> {
           console.error(error);
           if(error.code=== "auth/email-already-in-use"){

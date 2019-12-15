@@ -18,10 +18,13 @@ const firebaseConfig = {
 const firebase = require('firebase');
 firebase.initializeApp(firebaseConfig);
 
-const db = admin.firestore();
+// with pure javascript
+//exports.getScreams = functions.https.onRequest((request,response) => {
+//});
 
 app.get('/screams',(request,response) => {
-       db.collection('screams')
+    admin.firestore()
+         .collection('screams')
          .orderBy('createdAt', 'desc')
          .get()
          .then(data => {
@@ -48,7 +51,8 @@ app.post('/scream',(request,response) =>{
              userHandle: request.body.userHandle,
              createdAt: new Date().toISOString()
        };
-       db.collection('screams')
+       admin.firestore()
+            .collection('screams')
             .add(newScream)
             .then(doc => {
                  response.json({message : `document ${doc.id} created successuly`});
@@ -70,44 +74,7 @@ app.post('/signup',(request,response)=>{
        }
 
        //TODO validate data
-    let tokenValue,userId;
-    db.doc(`/users/${newUser.handle}`)
-      .get()
-      .then(doc => {
-                    if(doc.exists)
-                    {
-                        return response.status(400).json({message: 'this handle is already taken'});
-                    }else
-                    {
-                    return firebase.auth()
-                                   .createUserWithEmailAndPassword(newUser.email,newUser.password);
-                    }
-                    })
-      .then(data => {
-                    userId = data.user.uid;
-                    return data.user.getIdToken();
-      })
-      .then(token => {
-        tokenValue = token;
-          const userCrendetials = {
-            handle: newUser.handle,
-            email: newUser.email,
-            created: new Date().toISOString(),
-            userId:userId
-          };
-          return  db.doc(`/users/${newUser.handle}`).set(userCrendetials);
-                     })
-      .then(()=> response.status(201).json({tokenValue}))
-      .catch(error=> {
-          console.error(error);
-          if(error.code=== "auth/email-already-in-use"){
-              return response.status(400).json({message : 'email is already taken '})
-          }
-          response.status(500).json(error)
-      });
 
-
-               
 })
 
 

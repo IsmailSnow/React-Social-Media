@@ -1,7 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 
-const app = require('express')();
 admin.initializeApp();
 
 const firebaseConfig = {
@@ -15,13 +14,19 @@ const firebaseConfig = {
     measurementId: "G-NKLJLNSS21"
   };
 
+const express = require('express');
+const app = express();
+
 const firebase = require('firebase');
 firebase.initializeApp(firebaseConfig);
 
-const db = admin.firestore();
+// with pure javascript
+//exports.getScreams = functions.https.onRequest((request,response) => {
+//});
 
 app.get('/screams',(request,response) => {
-       db.collection('screams')
+    admin.firestore()
+         .collection('screams')
          .orderBy('createdAt', 'desc')
          .get()
          .then(data => {
@@ -48,7 +53,8 @@ app.post('/scream',(request,response) =>{
              userHandle: request.body.userHandle,
              createdAt: new Date().toISOString()
        };
-       db.collection('screams')
+       admin.firestore()
+            .collection('screams')
             .add(newScream)
             .then(doc => {
                  response.json({message : `document ${doc.id} created successuly`});
@@ -58,57 +64,6 @@ app.post('/scream',(request,response) =>{
                 console.error(error);
             });''
 });
-
-//sign up route 
-
-app.post('/signup',(request,response)=>{
-       const newUser = {
-           email: request.body.email,
-           password: request.body.password,
-           confirmPassword: request.body.confirmPassword,
-           handle: request.body.handle
-       }
-
-       //TODO validate data
-    let tokenValue,userId;
-    db.doc(`/users/${newUser.handle}`)
-      .get()
-      .then(doc => {
-                    if(doc.exists)
-                    {
-                        return response.status(400).json({message: 'this handle is already taken'});
-                    }else
-                    {
-                    return firebase.auth()
-                                   .createUserWithEmailAndPassword(newUser.email,newUser.password);
-                    }
-                    })
-      .then(data => {
-                    userId = data.user.uid;
-                    return data.user.getIdToken();
-      })
-      .then(token => {
-        tokenValue = token;
-          const userCrendetials = {
-            handle: newUser.handle,
-            email: newUser.email,
-            created: new Date().toISOString(),
-            userId:userId
-          };
-          return  db.doc(`/users/${newUser.handle}`).set(userCrendetials);
-                     })
-      .then(()=> response.status(201).json({tokenValue}))
-      .catch(error=> {
-          console.error(error);
-          if(error.code=== "auth/email-already-in-use"){
-              return response.status(400).json({message : 'email is already taken '})
-          }
-          response.status(500).json(error)
-      });
-
-
-               
-})
 
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
