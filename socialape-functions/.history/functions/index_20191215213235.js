@@ -13,6 +13,21 @@ const {
   login
 } = require('./util/handlers/users');
 
+
+
+
+
+const isEmpty = (string)=>{
+  return (string.trim() === '');
+}
+
+const isEmail = (email) => {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return email.match(regEx);
+}
+
+
+
 //Scream Route
 app.get('/screams', getAllScreams) 
 app.post('/scream',FBAuth,postOneScream)
