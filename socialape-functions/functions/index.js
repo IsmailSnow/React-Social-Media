@@ -10,7 +10,8 @@ const {
 
 const {
   signup,
-  login
+  login,
+  uploadImage
 } = require('./util/handlers/users');
 
 //Scream Route
@@ -20,6 +21,7 @@ app.post('/scream',FBAuth,postOneScream)
 //sign up route 
 app.post('/signup',signup);
 app.post('/login',login);
+app.post('/user/image',FBAuth,uploadImage)
 
 
 exports.api = functions.region('europe-west1').https.onRequest(app);
