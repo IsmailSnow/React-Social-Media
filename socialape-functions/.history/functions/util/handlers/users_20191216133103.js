@@ -115,9 +115,9 @@ exports.getAuthenticatedUser = (request,response) => {
     db.doc(`/users/${request.user.handle}`)
     .get()
     .then(doc => {
-      if(doc.exists){
+      if(doc.exists()){
         userData.credentials = doc.data();
-        return db.collection('likes').where('credentials','==',request.user.handle).get();
+        return db.collection('likes').where('credentials','==',req.user.handle).get();
       }
     })
     .then(data=> {
@@ -130,8 +130,13 @@ exports.getAuthenticatedUser = (request,response) => {
     .catch(error=>{
       console.error(error);
       response.status(500).json({error : error.code});
-    });
+    })
+
+
 }
+
+
+
 
 //upload image profile
 exports.uploadImage = (request, response) => {

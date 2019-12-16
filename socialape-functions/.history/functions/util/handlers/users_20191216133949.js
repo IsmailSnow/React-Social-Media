@@ -133,6 +133,9 @@ exports.getAuthenticatedUser = (request,response) => {
     });
 }
 
+
+
+
 //upload image profile
 exports.uploadImage = (request, response) => {
   const BusBoy = require('busboy');

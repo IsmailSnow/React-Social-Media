@@ -9,14 +9,10 @@ exports.FBAuth = (request, response , next) => {
          .then(decodedToken=>{
             request.user = decodedToken;
             console.log(decodedToken);
-            return db.collection('users')
-                     .where('userId','==',request.user.uid)
-                     .limit(1)
-                     .get();
+            return db.collection('users').where('userId','==',request.user.uid).limit(1).get();
          })
          .then(data=>{
            request.user.handle = data.docs[0].data().handle;
-           request.user.imageUrl = data.docs[0].data().imageUrl;
            return next();
          })
          .catch(error=>{

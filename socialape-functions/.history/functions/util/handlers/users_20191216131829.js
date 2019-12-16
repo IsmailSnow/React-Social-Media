@@ -104,34 +104,11 @@ db.doc(`/users/${request.user.handle}`)
   .catch(error=>{
     console.log(error);
     response.status(500).json({error: error.code});
-  });
+  })
 
 }
 
-// getAuthenticatedUser
 
-exports.getAuthenticatedUser = (request,response) => {
-    let userData = {};
-    db.doc(`/users/${request.user.handle}`)
-    .get()
-    .then(doc => {
-      if(doc.exists){
-        userData.credentials = doc.data();
-        return db.collection('likes').where('credentials','==',request.user.handle).get();
-      }
-    })
-    .then(data=> {
-      userData.likes = [];
-      data.forEach(doc=> {
-      userData.likes.push(doc.data());
-      })
-      return response.json(userData);
-    })
-    .catch(error=>{
-      console.error(error);
-      response.status(500).json({error : error.code});
-    });
-}
 
 //upload image profile
 exports.uploadImage = (request, response) => {

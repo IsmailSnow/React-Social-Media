@@ -7,12 +7,10 @@ firebase.initializeApp(config);
 
 const {
   validateSignupData,
-  validateLoginData,
-  reduceUserDetails
+  validateLoginData
 } = require('../validators');
 
 
-//sign up
 exports.signup = (request, response) => {
   const newUser = {
     email: request.body.email,
@@ -65,7 +63,6 @@ exports.signup = (request, response) => {
 
 };
 
-//login
 exports.login = (request, response) => {
   const user = {
     email: request.body.email,
@@ -93,47 +90,6 @@ exports.login = (request, response) => {
 
 };
 
-//add User Details
-exports.addUserDetails = (request,response) => {
-let userDetails = reduceUserDetails(request.body);
-db.doc(`/users/${request.user.handle}`)
-  .update(userDetails)
-  .then(()=>{
-    return response.json({message:'Details send successfully'});
-  })
-  .catch(error=>{
-    console.log(error);
-    response.status(500).json({error: error.code});
-  });
-
-}
-
-// getAuthenticatedUser
-
-exports.getAuthenticatedUser = (request,response) => {
-    let userData = {};
-    db.doc(`/users/${request.user.handle}`)
-    .get()
-    .then(doc => {
-      if(doc.exists){
-        userData.credentials = doc.data();
-        return db.collection('likes').where('credentials','==',request.user.handle).get();
-      }
-    })
-    .then(data=> {
-      userData.likes = [];
-      data.forEach(doc=> {
-      userData.likes.push(doc.data());
-      })
-      return response.json(userData);
-    })
-    .catch(error=>{
-      console.error(error);
-      response.status(500).json({error : error.code});
-    });
-}
-
-//upload image profile
 exports.uploadImage = (request, response) => {
   const BusBoy = require('busboy');
   const path = require('path');

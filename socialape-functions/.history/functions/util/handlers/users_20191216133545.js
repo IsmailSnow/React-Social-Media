@@ -130,8 +130,13 @@ exports.getAuthenticatedUser = (request,response) => {
     .catch(error=>{
       console.error(error);
       response.status(500).json({error : error.code});
-    });
+    })
+
+
 }
+
+
+
 
 //upload image profile
 exports.uploadImage = (request, response) => {
